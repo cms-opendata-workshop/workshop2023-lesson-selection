@@ -75,8 +75,8 @@ This is what you will see for the `mytriggers` map *first* and *second*.  The *f
 
 <table align="center">
     <tr>
-      <th><a href=""><img src="../fig/trig_first.jpg" style="width: 800px; margin-bottom: 5px;"></a></th>
-      <th><a href=""><img src="../fig/trig_second.jpg" style="width: 800px; margin-bottom: 5px;"></a></th>
+      <th><a href=""><img src="https://github.com/cms-opendata-workshop/workshop2022-lesson-trigger/blob/gh-pages/fig/trig_first.jpg" style="width: 800px; margin-bottom: 5px;"></a></th>
+      <th><a href=""><img src="https://github.com/cms-opendata-workshop/workshop2022-lesson-trigger/blob/gh-pages/fig/trig_second.jpg" style="width: 800px; margin-bottom: 5px;"></a></th>
     </tr>  
 </table>
 
