@@ -40,7 +40,7 @@ Deciding on which events to record is the main purpose of the trigger system.  I
 
 CMS does this in two main steps.   The first one, the **Level 1 trigger** (L1), implemented in hardware (fast FPGAs), reduces the input rate of 40 Mhz to around 100 KHz.  The other step is the **High Level Trigger** (HLT), run on commercial machines with good-old C++ and Python, where the input rate is leveled around the maximum available budget of around 2 KHz.
 
-![](../fig/triggeroverview.png){:width="60%"}
+<a href=""><img src="https://github.com/cms-opendata-workshop/workshop2022-lesson-trigger/blob/gh-pages/fig/triggeroverview.png" style="width: 800px"></a>
 
 There are hundreds of different triggers in CMS.  Each one of them is designed to pick certain types of events, with different intensities and topologies.  For instance the [HLT_Mu20](https://opendata.cern.ch/record/23438) trigger, will select events with at least one muon with *20 GeV* of transverse momentum.  
 
@@ -62,7 +62,7 @@ process.HLT_Mu20_v2 = cms.Path( process.HLTBeginSequence + process.hltL1sL1Singl
 ~~~
 {: .language-python}
 
-![](../fig/triggerpath.png)
+<a href=""><img src="https://github.com/cms-opendata-workshop/workshop2022-lesson-trigger/blob/gh-pages/fig/triggerpath.png" style="width: 800px"></a>
 
 Finally, triggers are code, and those pieces of code are constantly changing.  Modifications to a trigger could imply a different version identifier.  For instance, our `HLT_Mu20` could actually be `HLT_Mu15_v1` or `HLT_Mu15_v2`, etc., depending on the version.  Therefore, it is completely normal that the trigger names can **change from run to run**.
 
