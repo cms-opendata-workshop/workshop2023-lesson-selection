@@ -7,7 +7,7 @@ objectives:
 - "Combine trigger, identification, and isolation information into a full selection for a specific physics process."
 keypoints:
 - "Triggers usually impose various kinematic restrictions on objects of interest."
-- "Final state objects produced promptly from the proton collision are typically required to have significant momentum, tight ID quality, and to be isolated (depending on the topology of the physics process."
+- "Final state objects produced promptly from the proton collision are typically required to have significant momentum, tight ID quality, and to be isolated (depending on the topology of the physics process)."
 - "Veto objects are typically selected using looser criteria so that the efficiency of the veto is very high."
 - "Correlations between objects can be used either to select specifically for signal events or reject background events."
 ---
@@ -108,7 +108,7 @@ Based on these processes, consider:
  * Which background simulations should you include in your study?
 
 > ## Solution
-> The most important sample to include is $$W \rightarrow \ell \nu$ + jets, and single top quark production (the t-channel and tW production modes are most important). Smaller backgrounds from Drell-Yan production, $$t\bar{t} + W/Z$$, and diboson production can also be modeled from simulation. Multijet ("QCD") background simulation is often not used in final results because of the difficulty in modeling pure QCD interactions, so this background is more often estimated using data in alternate selection regions ("control regions").
+> The most important sample to include is $$W \rightarrow \ell \nu$$ + jets, and single top quark production (the t-channel and tW production modes are most important). Smaller backgrounds from Drell-Yan production, $$t\bar{t} + W/Z$$, and diboson production can also be modeled from simulation. Multijet ("QCD") background simulation is often not used in final results because of the difficulty in modeling pure QCD interactions, so this background is more often estimated using data in alternate selection regions ("control regions").
 {: .solution}
 
  * Should you apply any upper or lower limits on the numbers of certain physics objects in your events?
