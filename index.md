@@ -4,7 +4,8 @@ root: .  # Is the only page that doesn't follow the pattern /:path/index.html
 permalink: index.html  # Is the only page that doesn't follow the pattern /:path/index.html
 ---
 
-![https://www.symmetrymagazine.org/article/blink-and-its-gone?language_content_entity=und](https://www.symmetrymagazine.org/sites/default/files/styles/2015_hero/public/images/standard/Header_Blink_and_its_gone.jpg?itok=0zaupJFN){:width="40%"}
+![](https://www.symmetrymagazine.org/sites/default/files/styles/2015_hero/public/images/standard/Header_Blink_and_its_gone.jpg?itok=0zaupJFN){:width="60%"}
+<p style="text-align: center;">[Image credit: Symmetry Magazine](https://www.symmetrymagazine.org/article/blink-and-its-gone?language_content_entity=und)</p>
 
 This lesson will explore how to transform the information stored in POET files into sensible selection criteria for a physics analysis. We will also explore
 how to access information from the trigger system for each event. 
