@@ -5,14 +5,11 @@ exercises: 0
 questions:
 - "Why might I need to access the DB conditions for trigger studies?"
 - "What are the HLTConfigProvider and HLTPrescaleProvider classes?"
-- "What kind of triggers will be needed for our next lessons?"
 objectives:
 - "Learn why one might want to access additional trigger information from the conditions DB"
 - "Learn how to use the HLTConfigProvider and HLTPrescaleProvider classes"
-- "Undertand the pre-selection we will be doing for our later analysis"
 keypoints:
 - "A lot more information related to trigger can be obtained from the HLTConfigProvider and HLTPrescaleProvider and the conditions database"
-- "We will be working with pre-filtered data samples later in the workshop"
 ---
 
 ## The HLTConfigProvider and HLTPrescaleProvider

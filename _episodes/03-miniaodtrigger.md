@@ -3,14 +3,14 @@ title: "MiniAOD triggering"
 teaching: 10
 exercises: 10
 questions:
-- "How can I access trigger information from miniAOD files?"
+- "How can I access trigger information from MiniAOD files?"
 - "What are trigger objects?"
 objectives:
-- "Learn how one can retrieve trigger information like pass/fail bits or prescales from miniAOD files"
+- "Learn how one can retrieve trigger information like pass/fail bits or prescales from MiniAOD files"
 - "Learn what trigger objects are and why they are important"
 keypoints:
-- "It is possible to retrieve trigger information from miniAOD files directly"
-- "Trigger objects should be check against reconstructed objects"
+- "It is possible to retrieve trigger information from MiniAOD files directly"
+- "Trigger objects can be checked against reconstructed objects"
 ---
 
 ## How to access trigger information
@@ -268,74 +268,75 @@ process.p = cms.Path(process.demo)
 > Let's create a `src/MiniAODTriggerAnalyzer.cc` from scratch!  From your local directory just open up your favorite editor and copy paste the code.  Save it and compile with `scram b`, as always.
 >
 > Now, let's add the python module that we need to configure it to our `python/poet_cfg.py` file.  We will call it `myminiaodtrig` instead of `demo`.  From your local directory open the `python/poet_cfg.py` configuration file and add this module just before the `process.simpletrig` module (this is just to keep things organized).
->That portion of the config file should look like:
 >
->>~~~
->>#---- Example on how to add trigger information
->>#---- To include it, uncomment the lines below and include the
->>#---- module in the final path
->>#process.mytriggers = cms.EDAnalyzer('TriggerAnalyzer',
->>#                              processName = cms.string("HLT"),
->>#                              #---- These are example of OR of triggers for 2015
->>#                              #---- Wildcards * and ? are accepted (with usual meanings)
->>#                              #---- If left empty, all triggers will run              
->>#                              triggerPatterns = cms.vstring("HLT_IsoMu20_v*","HLT_IsoTkMu20_v*"), 
->>#                              triggerResults = cms.InputTag("TriggerResults","","HLT")
->>#                              )
->>
->>#---- test to see if we get trigger info ----
->>process.myminiaodtrig = cms.EDAnalyzer("MiniAODTriggerAnalyzer",
->>    bits = cms.InputTag("TriggerResults","","HLT"),
->>    prescales = cms.InputTag("patTrigger"),
->>    objects = cms.InputTag("selectedPatTrigger"),
->>)
->>
->>#------------Example of simple trigger module with parameters by hand-------------------#
->>process.mysimpletrig = cms.EDAnalyzer('SimpleTriggerAnalyzer',
->>                              processName = cms.string("HLT"),
->>                              triggerResults = cms.InputTag("TriggerResults","","HLT")
->>                              )
->>~~~
->>{: .language-python}
->>
->{: .solution}
+> > ## Check your editing:
+> > ~~~
+> > #---- Example on how to add trigger information
+> > #---- To include it, uncomment the lines below and include the
+> > #---- module in the final path
+> > #process.mytriggers = cms.EDAnalyzer('TriggerAnalyzer',
+> > #                              processName = cms.string("HLT"),
+> > #                              #---- These are example of OR of triggers for 2015
+> > #                              #---- Wildcards * and ? are accepted (with usual meanings)
+> > #                              #---- If left empty, all triggers will run              
+> > #                              triggerPatterns = cms.vstring("HLT_IsoMu20_v*","HLT_IsoTkMu20_v*"), 
+> > #                              triggerResults = cms.InputTag("TriggerResults","","HLT")
+> > #                              )
+> >
+> > #---- test to see if we get trigger info ----
+> > process.myminiaodtrig = cms.EDAnalyzer("MiniAODTriggerAnalyzer",
+> >     bits = cms.InputTag("TriggerResults","","HLT"),
+> >     prescales = cms.InputTag("patTrigger"),
+> >     objects = cms.InputTag("selectedPatTrigger"),
+> > )
+> >
+> > #------------Example of simple trigger module with parameters by hand-------------------#
+> > process.mysimpletrig = cms.EDAnalyzer('SimpleTriggerAnalyzer',
+> >                               processName = cms.string("HLT"),
+> >                               triggerResults = cms.InputTag("TriggerResults","","HLT")
+> >                               )
+> > ~~~
+> > {: .language-python}
+> >
+> {: .solution}
 >
->Now let's make sure it runs in the CMSSW path at the end of the configuration file.  Let's just add it to both options Data or MC.  Make sure you add it to the beginning of the sequence.  This is because we need to avoid the intial filters that are already in place (more on this later).
+> Now let's make sure it runs in the CMSSW path at the end of the configuration file.  Let's just add it to both options Data or MC.  Make sure you add it to the beginning of the sequence.  This is because we need to avoid the intial filters that are already in place (more on this later).
 >
->>~~~
->>if isData:
->>	process.p = cms.Path(process.myminiaodtrig+process.hltHighLevel+process.elemufilter+process.myelectrons+process.mymuons+process.mytaus+process.myphotons+process.mypvertex+process.mysimpletrig+
->>                             process.looseAK4Jets+process.patJetCorrFactorsReapplyJEC+process.slimmedJetsNewJEC+process.myjets+
->>                             process.looseAK8Jets+process.patJetCorrFactorsReapplyJECAK8+process.slimmedJetsAK8NewJEC+process.myfatjets+
->>                             process.uncorrectedMet+process.uncorrectedPatMet+process.Type1CorrForNewJEC+process.slimmedMETsNewJEC+process.mymets
->>                             )
->>else:
->>	process.p = cms.Path(process.myninioaodtrig+process.hltHighLevel+process.elemufilter+process.myelectrons+process.mymuons+process.mytaus+process.myphotons+process.mypvertex+process.mysimpletrig+
->>                             process.mygenparticle+process.looseAK4Jets+process.patJetCorrFactorsReapplyJEC+
->>                             process.slimmedJetsNewJEC+process.myjets+process.looseAK8Jets+process.patJetCorrFactorsReapplyJECAK8+
->>                             process.slimmedJetsAK8NewJEC+process.myfatjets+process.uncorrectedMet+process.uncorrectedPatMet+
->>                             process.Type1CorrForNewJEC+process.slimmedMETsNewJEC+process.mymets
->>                             )
->>~~~
->>{: .language-python}
->{: .solution}
+> > ## Check your editing:
+> > ~~~
+> > if isData:
+> > 	process.p = cms.Path(process.myminiaodtrig+process.hltHighLevel+process.elemufilter+process.myelectrons+process.mymuons+process.mytaus+process.myphotons+process.mypvertex+process.mysimpletrig+
+> >                              process.looseAK4Jets+process.patJetCorrFactorsReapplyJEC+process.slimmedJetsNewJEC+process.myjets+
+> >                              process.looseAK8Jets+process.patJetCorrFactorsReapplyJECAK8+process.slimmedJetsAK8NewJEC+process.myfatjets+
+> >                              process.uncorrectedMet+process.uncorrectedPatMet+process.Type1CorrForNewJEC+process.slimmedMETsNewJEC+process.mymets
+> >                              )
+> > else:
+>  >	process.p = cms.Path(process.myninioaodtrig+process.hltHighLevel+process.elemufilter+process.myelectrons+process.mymuons+process.mytaus+process.myphotons+process.mypvertex+process.mysimpletrig+
+> >                              process.mygenparticle+process.looseAK4Jets+process.patJetCorrFactorsReapplyJEC+
+> >                              process.slimmedJetsNewJEC+process.myjets+process.looseAK8Jets+process.patJetCorrFactorsReapplyJECAK8+
+> >                              process.slimmedJetsAK8NewJEC+process.myfatjets+process.uncorrectedMet+process.uncorrectedPatMet+
+> >                              process.Type1CorrForNewJEC+process.slimmedMETsNewJEC+process.mymets
+> >                              )
+> > ~~~
+> > {: .language-python}
+> {: .solution}
 >
->Lets do just one more change before we get to run POET.  Let's print out for each event, we can achive that by changing the `MessageLogger` lines to:
+> Lets do just one more change before we get to run POET.  Let's print out for each event, we can achive that by changing the `MessageLogger` lines to:
 >
->~~~
->#---- Configure the framework messaging system
->#---- https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMessageLogger
->process.load("FWCore.MessageService.MessageLogger_cfi")
->#process.MessageLogger.cerr.threshold = "WARNING"
->#process.MessageLogger.categories.append("POET")
->#process.MessageLogger.cerr.INFO = cms.untracked.PSet(
->#    limit=cms.untracked.int32(-1))
->#process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(True))
->process.MessageLogger.cerr.FwkReport.reportEvery = 1
->~~~
->{: .language-python}
+> ~~~
+> #---- Configure the framework messaging system
+> #---- https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMessageLogger
+> process.load("FWCore.MessageService.MessageLogger_cfi")
+> #process.MessageLogger.cerr.threshold = "WARNING"
+> #process.MessageLogger.categories.append("POET")
+> #process.MessageLogger.cerr.INFO = cms.untracked.PSet(
+> #    limit=cms.untracked.int32(-1))
+> #process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(True))
+> process.MessageLogger.cerr.FwkReport.reportEvery = 1
+> ~~~
+> {: .language-python}
 >
->I.e., comment out most of the lines leaving on only the first one and adding the `process.MessageLogger.cerr.FwkReport.reportEvery = 1` line.
+> I.e., comment out most of the lines leaving on only the first one and adding the `process.MessageLogger.cerr.FwkReport.reportEvery = 1` line.
 {: .challenge}
 
 > ## Trigger dump from MiniAOD (Optional / Offline)

@@ -7,10 +7,10 @@ questions:
 - How should I select events for a physics analysis?
 objectives:
 - Summarize information available from POET for various physics objects.
-- Describe the fundamental elements of event selection in CMS
+- Describe the fundamental elements of event selection in CMS.
 keypoints:
-- Physics objects are the final abstraction in the detector that can be associated to physical entities like particles.
-- POET is a collection of CMSSW EDAnalyzers meant to teach how to access physics objects information.
+- POET output files contain the important kinematics, identification, isolation, and tagging information typically needed for analysis event selection.
+- Event selection criteria must be a reasoned balance of physics objects to keep, physics objects to reject, and trigger options from CMS.
 ---
 
 ## What we've learned so far...
