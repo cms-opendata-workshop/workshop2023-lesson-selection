@@ -15,7 +15,7 @@ keypoints:
 All of the trigger and physics object information from this lesson is combined when designing the event selection procedure for a physics analysis.
 
 > ## Workshop analysis example: H -> tau tau
-> Later in the workshopw we will use a search for Higgs bosons as an example analysis. The signal for this search is one Higgs boson that decays to two tau leptons, with one tau lepton decaying hadronically and the other tau lepton decaying to a muon and neutrinos.
+> Later in the workshop we will use a search for Higgs bosons as an example analysis. The signal for this search is one Higgs boson that decays to two tau leptons, with one tau lepton decaying hadronically and the other tau lepton decaying to a muon and neutrinos.
 {: .callout}
 
 > ## Your analysis example
@@ -40,6 +40,7 @@ Based on these particles, consider:
 > ## Solution
 > This analysis is perfect for a "cross trigger" that selects more than one object! The trigger used in this example is `HLT_IsoMu17_eta2p1_LooseIsoPFTau20`, requiring both a muon and a tau.
 {: .solution}
+
 
  * Which objects should you require in each event?
 
@@ -108,6 +109,46 @@ Based on these processes, consider:
 > Looking back to the background list, the W boson background has the unique feature that a single neutrino is expected from its decay products. The transverse mass (see [equation 2](https://arxiv.org/pdf/1401.5041.pdf)) constructed from the muon and MET is typically near the W boson mass for this background, while it should have small values in signal since the muon and the tau-decay neutrinos are not associated. This analysis requires the muon+MET transverse mass to be < 30 GeV to reject W boson background.
 {: .solution}
 
+## Prepare for the $$t\bar{t}$$ analysis
+
+For Wednesday, due to the large size of the datasets involved, we need to make a pre-filtering or selection to our data.  In this version of POET we have implemented those modifications and apply two filters.  One on the triggers we will be using and a second one to require at least one *tight* electron or one *tight* muon.  Can you spot these filters in the configuration file?
+
+Let's have a look.
+
+The trigger filter:
+
+~~~
+#----------- Turn on a trigger filter by adding this module to the the final path below -------#
+process.hltHighLevel = cms.EDFilter("HLTHighLevel",
+    TriggerResultsTag = cms.InputTag("TriggerResults","","HLT"),
+    HLTPaths = cms.vstring('HLT_Ele22_eta2p1_WPLoose_Gsf_v*','HLT_IsoMu20_v*','HLT_IsoTkMu20_v*'),           # provide list of HLT paths (or patterns) you want
+    eventSetupPathsKey = cms.string(''), # not empty => use read paths from AlCaRecoTriggerBitsRcd via this key
+    andOr = cms.bool(True),             # how to deal with multiple triggers: True (OR) accept if ANY is true, False (AND) accept if ALL are true
+    throw = cms.bool(True)    # throw exception on unknown path names
+)
+~~~
+{: .language-python}
+
+You guessed correctly if thought the included triggers are the ones we are going to use for our $$t\bar{t}$ analysis.
+
+The electron/muon filter:
+
+~~~
+#---- Example of a very basic home-made filter to select only events of interest
+#---- The filter can be added to the running path below if needed but is not applied by default
+process.elemufilter = cms.EDFilter('SimpleEleMuFilter',
+                                   electrons = cms.InputTag("slimmedElectrons"),
+                                   muons = cms.InputTag("slimmedMuons"),
+                                   vertices=cms.InputTag("offlineSlimmedPrimaryVertices"),
+                                   mu_minpt = cms.double(26),
+                                   mu_etacut = cms.double(2.1),
+                                   ele_minpt = cms.double(26),
+                                   ele_etacut = cms.double(2.1)
+                                   )
+~~~
+{: .language-python}
+
+Finally, let us just mention that, instead of the `mytriggers` module (which was commented out), we have set up a simpler trigger retriever called `mysinpletrig` in the `poet_cfg.py`.
 
 
 

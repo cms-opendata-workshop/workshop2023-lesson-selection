@@ -1,5 +1,5 @@
 ---
-title: "Introduction"
+title: "CMS Trigger System"
 teaching: 10
 exercises: 0
 questions:

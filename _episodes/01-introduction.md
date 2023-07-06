@@ -1,6 +1,6 @@
 ---
 title: "Introduction"
-teaching: 20
+teaching: 10
 exercises: 0
 questions:
 - What did we learn in the physics objects pre-learning module?

@@ -1,7 +1,7 @@
 ---
 title: "MiniAOD triggering"
-teaching: 0
-exercises: 25
+teaching: 10
+exercises: 10
 questions:
 - "How can I access trigger information from miniAOD files?"
 - "What are trigger objects?"
@@ -13,11 +13,13 @@ keypoints:
 - "Trigger objects should be check against reconstructed objects"
 ---
 
-## Introduction
+## How to access trigger information
 
-We would like to understand the trigger focusing on our final goal, which is, as you know, to partially reproduce a [$$t\bar{t}$$ analysis](https://link.springer.com/content/pdf/10.1007/JHEP09(2017)051.pdf) from CMS.  
+We would like to understand the trigger focusing on our final goal, which is to partially reproduce a [$$t\bar{t}$$ analysis](https://link.springer.com/content/pdf/10.1007/JHEP09(2017)051.pdf) from CMS. There are two primary ways to access trigger information, which both have uses for analysts:
 
-In this episode we will concentrate on extracting the informatio about the trigger and trigger prescales directly from the data stored in the `miniAOD` files.  However, in the next episode, we will attempt to do likewise but using the conditions database instead.  You will learn why these two approaches may be needed.
+ * Directly from the data stored in the `MiniAOD` files
+ * By accessing the conditions database 
+
 
 ## MiniAOD triggering
 
@@ -25,15 +27,14 @@ First make sure to fire up your CMSSW Docker container if you haven't already:
 
 ~~~
 docker start -i my_od #use the name you gave to yours
+cd PhysObjectExtractorTool/PhysObjectExtractor
 ~~~
 {: .language-bash}
 
-Make sure you are at the `/code/CMSSW_7_6_7/src/PhysObjectExtractorTool/PhysObjectExtractor` level, i.e., inside **your poet repository from previous lessons**.
-
-Now, we will check out the version of POET for this lesson, which is the same as the one we have used to **pre-process** the data we will be using later.  `git stash` any lingering modifications or simply do `git checkout .` (note the dot) to reset to the original status of this version.  We will start fresh with a new version, this is the version we use to produce the skmmed datasets with which we will be working tomorrow:
+Now, we will check out the version of POET that we can customize for these workshop lessons.  You can `git stash` any lingering modifications in your branch from the pre-exercises, or simply do `git checkout .` (note the dot) to reset to the original status of this version.
 
 ~~~
-git checkout odws2022-ttbaljets-prod
+git checkout odws2023
 ~~~
 {: .language-bash}
 
@@ -47,23 +48,13 @@ cmsRun python/poet_cfg.py True
 
 Like in the previous lessons, you should see a new `myoutput.root` files emerging.  Let's not worry about it for now, just make sure it is newly produced.
 
-If you look at the `src` directory:
+> ## Special Mac chip users: hang tight!
+> Files to investigate will be linked in the next episode
+{: .prereq}
 
-~~~
-ls src
-~~~
-{: .language-bash}
+## Trigger collections in MiniAOD
 
-you will see that there is actually an EDAnalyzer called `TriggerAnalyzer.cc`.  There is also a `SimpleTriggerAnalyzer.cc`:  
-
-~~~
-ElectronAnalyzer.cc     JetAnalyzer.cc             MuonAnalyzer.cc       SimpleTriggerAnalyzer.cc  TriggerAnalyzer.cc
-FatjetAnalyzer.cc       MetAnalyzer.cc             PhotonAnalyzer.cc     TauAnalyzer.cc            VertexAnalyzer.cc
-GenParticleAnalyzer.cc  MiniAODTriggerAnalyzer.cc  SimpleEleMuFilter.cc  TriggObjectAnalyzer.cc
-~~~
-{: .output}
-
-Let's not worry about those right now (we will check them out later) and **pretend there is no analyzer related to extracting the trigger information** at hand.  In fact we do not have an analyzer (yet) that can do what we are about to do: to extract the trigger information directly from the dataset files.  Just for you to remember, we do know the information should be there.  Dump again the content of one of the files we have been working with:
+Investigate the contents of a MiniAOD ROOT file:
 
 ~~~
 edmDumpEventContent root://eospublic.cern.ch//eos/opendata/cms/mc/RunIIFall15MiniAODv2/TT_TuneCUETP8M1_13TeV-powheg-pythia8/MINIAODSIM/PU25nsData2015v1_76X_mcRun2_asymptotic_v12_ext3-v1/00000/02837459-03C2-E511-8EA2-002590A887AC.root
@@ -139,7 +130,8 @@ vector<reco::VertexCompositePtrCandidate>    "slimmedSecondaryVertices"   ""    
 ~~~
 {: .output}
 
-Clearly, there are `selectedPatTrigger` and `patTrigger` collections there.
+There are various entries of type `edm::TriggerResults`, but we are specifically interested in the one labelled "PAT".
+In the "PAT" collection section we also find `selectedPatTrigger` and `patTrigger` collections.
 
 Although we do not have such analyzer yet, we know where to find information on how to implement it.  If we go to the [WorkBookMiniAOD2015](https://twiki.cern.ch/twiki/bin/view/CMSPublic/WorkBookMiniAOD2015#Trigger) CMS Twiki page, we will find the relevant information necessary to our purposes.  Let's have a look.
 
@@ -271,79 +263,84 @@ process.p = cms.Path(process.demo)
 ~~~
 {: .language-python}
 
+> ## Prep the MiniAODTriggerAnalyzer  (Optional / Offline)
+>
+> Let's create a `src/MiniAODTriggerAnalyzer.cc` from scratch!  From your local directory just open up your favorite editor and copy paste the code.  Save it and compile with `scram b`, as always.
+>
+> Now, let's add the python module that we need to configure it to our `python/poet_cfg.py` file.  We will call it `myminiaodtrig` instead of `demo`.  From your local directory open the `python/poet_cfg.py` configuration file and add this module just before the `process.simpletrig` module (this is just to keep things organized).
+>That portion of the config file should look like:
+>
+>>~~~
+>>#---- Example on how to add trigger information
+>>#---- To include it, uncomment the lines below and include the
+>>#---- module in the final path
+>>#process.mytriggers = cms.EDAnalyzer('TriggerAnalyzer',
+>>#                              processName = cms.string("HLT"),
+>>#                              #---- These are example of OR of triggers for 2015
+>>#                              #---- Wildcards * and ? are accepted (with usual meanings)
+>>#                              #---- If left empty, all triggers will run              
+>>#                              triggerPatterns = cms.vstring("HLT_IsoMu20_v*","HLT_IsoTkMu20_v*"), 
+>>#                              triggerResults = cms.InputTag("TriggerResults","","HLT")
+>>#                              )
+>>
+>>#---- test to see if we get trigger info ----
+>>process.myminiaodtrig = cms.EDAnalyzer("MiniAODTriggerAnalyzer",
+>>    bits = cms.InputTag("TriggerResults","","HLT"),
+>>    prescales = cms.InputTag("patTrigger"),
+>>    objects = cms.InputTag("selectedPatTrigger"),
+>>)
+>>
+>>#------------Example of simple trigger module with parameters by hand-------------------#
+>>process.mysimpletrig = cms.EDAnalyzer('SimpleTriggerAnalyzer',
+>>                              processName = cms.string("HLT"),
+>>                              triggerResults = cms.InputTag("TriggerResults","","HLT")
+>>                              )
+>>~~~
+>>{: .language-python}
+>>
+>{: .solution}
+>
+>Now let's make sure it runs in the CMSSW path at the end of the configuration file.  Let's just add it to both options Data or MC.  Make sure you add it to the beginning of the sequence.  This is because we need to avoid the intial filters that are already in place (more on this later).
+>
+>>~~~
+>>if isData:
+>>	process.p = cms.Path(process.myminiaodtrig+process.hltHighLevel+process.elemufilter+process.myelectrons+process.mymuons+process.mytaus+process.myphotons+process.mypvertex+process.mysimpletrig+
+>>                             process.looseAK4Jets+process.patJetCorrFactorsReapplyJEC+process.slimmedJetsNewJEC+process.myjets+
+>>                             process.looseAK8Jets+process.patJetCorrFactorsReapplyJECAK8+process.slimmedJetsAK8NewJEC+process.myfatjets+
+>>                             process.uncorrectedMet+process.uncorrectedPatMet+process.Type1CorrForNewJEC+process.slimmedMETsNewJEC+process.mymets
+>>                             )
+>>else:
+>>	process.p = cms.Path(process.myninioaodtrig+process.hltHighLevel+process.elemufilter+process.myelectrons+process.mymuons+process.mytaus+process.myphotons+process.mypvertex+process.mysimpletrig+
+>>                             process.mygenparticle+process.looseAK4Jets+process.patJetCorrFactorsReapplyJEC+
+>>                             process.slimmedJetsNewJEC+process.myjets+process.looseAK8Jets+process.patJetCorrFactorsReapplyJECAK8+
+>>                             process.slimmedJetsAK8NewJEC+process.myfatjets+process.uncorrectedMet+process.uncorrectedPatMet+
+>>                             process.Type1CorrForNewJEC+process.slimmedMETsNewJEC+process.mymets
+>>                             )
+>>~~~
+>>{: .language-python}
+>{: .solution}
+>
+>Lets do just one more change before we get to run POET.  Let's print out for each event, we can achive that by changing the `MessageLogger` lines to:
+>
+>~~~
+>#---- Configure the framework messaging system
+>#---- https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMessageLogger
+>process.load("FWCore.MessageService.MessageLogger_cfi")
+>#process.MessageLogger.cerr.threshold = "WARNING"
+>#process.MessageLogger.categories.append("POET")
+>#process.MessageLogger.cerr.INFO = cms.untracked.PSet(
+>#    limit=cms.untracked.int32(-1))
+>#process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(True))
+>process.MessageLogger.cerr.FwkReport.reportEvery = 1
+>~~~
+>{: .language-python}
+>
+>I.e., comment out most of the lines leaving on only the first one and adding the `process.MessageLogger.cerr.FwkReport.reportEvery = 1` line.
+{: .challenge}
 
-Let's do that, let's create a `src/MiniAODTriggerAnalyzer.cc` from scratch.  From your local directory just open up your favorite editor and copy paste the code.  Save it and compile with `scram b`, as always.
-
-Now, let's add the python module that we need to configure it to our `python/poet_cfg.py` file.  We will call it `myminiaodtrig` instead of `demo`.  From you local directory open the `python/poet_cfg.py` configurator and add this module just before the `process.simpletrig` module (this is just to keep things organized).  that portion of the config files should look like
-
-~~~
-#---- Example on how to add trigger information
-#---- To include it, uncomment the lines below and include the
-#---- module in the final path
-#process.mytriggers = cms.EDAnalyzer('TriggerAnalyzer',
-#                              processName = cms.string("HLT"),
-#                              #---- These are example of OR of triggers for 2015
-#                              #---- Wildcards * and ? are accepted (with usual meanings)
-#                              #---- If left empty, all triggers will run              
-#                              triggerPatterns = cms.vstring("HLT_IsoMu20_v*","HLT_IsoTkMu20_v*"), 
-#                              triggerResults = cms.InputTag("TriggerResults","","HLT")
-#                              )
-
-#---- test to see if we get trigger info ----
-process.myminiaodtrig = cms.EDAnalyzer("MiniAODTriggerAnalyzer",
-    bits = cms.InputTag("TriggerResults","","HLT"),
-    prescales = cms.InputTag("patTrigger"),
-    objects = cms.InputTag("selectedPatTrigger"),
-)
-
-#------------Example of simple trigger module with parameters by hand-------------------#
-process.mysimpletrig = cms.EDAnalyzer('SimpleTriggerAnalyzer',
-                              processName = cms.string("HLT"),
-                              triggerResults = cms.InputTag("TriggerResults","","HLT")
-                              )
-~~~
-{: .language-python}
-
-Now let's make sure it runs in the CMSSW path at the end of the configuration file.  Let's just add it to both options Data or MC.  Make sure you add it to the beginning of the sequence.  This is because we need to avoid the intial filters that are already in place (more on this later).
-
-~~~
-if isData:
-	process.p = cms.Path(process.myminiaodtrig+process.hltHighLevel+process.elemufilter+process.myelectrons+process.mymuons+process.mytaus+process.myphotons+process.mypvertex+process.mysimpletrig+
-                             process.looseAK4Jets+process.patJetCorrFactorsReapplyJEC+process.slimmedJetsNewJEC+process.myjets+
-                             process.looseAK8Jets+process.patJetCorrFactorsReapplyJECAK8+process.slimmedJetsAK8NewJEC+process.myfatjets+
-                             process.uncorrectedMet+process.uncorrectedPatMet+process.Type1CorrForNewJEC+process.slimmedMETsNewJEC+process.mymets
-                             )
-else:
-	process.p = cms.Path(process.myninioaodtrig+process.hltHighLevel+process.elemufilter+process.myelectrons+process.mymuons+process.mytaus+process.myphotons+process.mypvertex+process.mysimpletrig+
-                             process.mygenparticle+process.looseAK4Jets+process.patJetCorrFactorsReapplyJEC+
-                             process.slimmedJetsNewJEC+process.myjets+process.looseAK8Jets+process.patJetCorrFactorsReapplyJECAK8+
-                             process.slimmedJetsAK8NewJEC+process.myfatjets+process.uncorrectedMet+process.uncorrectedPatMet+
-                             process.Type1CorrForNewJEC+process.slimmedMETsNewJEC+process.mymets
-                             )
-~~~
-{: .language-python}
-
-Lets do just one more change before we get to run POET.  Let's print out for each event, we can achive that by changing the `MessageLogger` lines to:
-
-~~~
-#---- Configure the framework messaging system
-#---- https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMessageLogger
-process.load("FWCore.MessageService.MessageLogger_cfi")
-#process.MessageLogger.cerr.threshold = "WARNING"
-#process.MessageLogger.categories.append("POET")
-#process.MessageLogger.cerr.INFO = cms.untracked.PSet(
-#    limit=cms.untracked.int32(-1))
-#process.options = cms.untracked.PSet(wantSummary=cms.untracked.bool(True))
-process.MessageLogger.cerr.FwkReport.reportEvery = 1
-~~~
-{: .language-python}
-
-I.e., comment out most of the lines leaving on only the first one and adding the `process.MessageLogger.cerr.FwkReport.reportEvery = 1` line.
-
-
-Now, let's run with `cmsRun python/poet_cfg.py True`.  We will get a lot of print-outs. Let's check the printout for the last event:
-
-> ## Trigger dump from MiniAOD
+> ## Trigger dump from MiniAOD (Optional / Offline)
+>
+> Now, let's run with `cmsRun python/poet_cfg.py True`.  We will get a lot of print-outs. Let's check the printout for the last event:
 > 
 > > ## View dump
 > >
@@ -453,11 +450,7 @@ std::cout << "\n === TRIGGER OBJECTS === " << std::endl;
 ~~~
 {: .language-cpp}
 
-
-![](../fig/triggerpath.png)
-
-
-Finally, note that we are not writing any information into our `myoutput.root` file.  You are welcome to work with us if you would like to help us implement this in the `2015` version of POET.
+Finally, note that we are not writing any information into our `myoutput.root` file -- but everything is configurable! Any of the printed quantities could have been stored in TTree branches instead. 
 
 {% include links.md %}
 
