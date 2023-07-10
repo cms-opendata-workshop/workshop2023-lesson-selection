@@ -34,6 +34,7 @@ cd PhysObjectExtractorTool/PhysObjectExtractor
 Now, we will check out the version of POET that we can customize for these workshop lessons.  You can `git stash` any lingering modifications in your branch from the pre-exercises, or simply do `git checkout .` (note the dot) to reset to the original status of this version.
 
 ~~~
+git fetch origin
 git checkout odws2023
 ~~~
 {: .language-bash}
