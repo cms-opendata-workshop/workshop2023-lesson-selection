@@ -63,7 +63,11 @@ Let's run POET with the usual `cmsRun python/poet_cfg.py True`.
 Let's explore the output, i.e., let's open the `myoutput.root` file.
 
 > ## Special Mac chip users:
-> You can download this file from CERNbox and investigate it in the ROOT container.
+> You can download this file from the web and investigate it in the ROOT container.
+> ~~~
+> wget https://jmhogan.web.cern.ch/jmhogan/OpenData/myoutput_triggerMuons.root
+> ~~~
+> {: .language-bash}
 {: .prereq}
 
 ~~~
